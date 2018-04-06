@@ -1,0 +1,52 @@
+import java.io.File;
+
+import org.geotools.swing.data.JFileDataStoreChooser;
+
+/**    
+ * 文件名：MapTools.java    
+ *    
+ * 版本信息：    
+ * 日期：2018年4月2日    
+ * Copyright 足下 Corporation 2018     
+ * 版权所有    
+ *    
+ */
+
+/**    
+ *     
+ * 项目名称：TwoMap    
+ * 类名称：MapTools    
+ * 类描述：    
+ * 创建人：jinyu    
+ * 创建时间：2018年4月2日 上午1:18:38    
+ * 修改人：jinyu    
+ * 修改时间：2018年4月2日 上午1:18:38    
+ * 修改备注：    
+ * @version     
+ *     
+ */
+public class MapTools {
+
+    /**
+     * @param args
+     */
+    public static void main(String[] args) {
+        File file = JFileDataStoreChooser.showOpenFile("shp", null);
+        if (file == null) {
+            return;
+        }
+
+        FileDataStore store = FileDataStoreFinder.getDataStore(file);
+        SimpleFeatureSource featureSource = store.getFeatureSource();
+
+        // Create a map context and add our shapefile to it
+        MapContext map = new DefaultMapContext();
+        map.setTitle("Quickstart");
+        map.addLayer(featureSource, null);
+
+        // Now display the map
+        JMapFrame.showMap(map); 
+
+    }
+
+}

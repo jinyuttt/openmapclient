@@ -1,0 +1,44 @@
+/**    
+ * 文件名：MapServerRead.java    
+ *    
+ * 版本信息：    
+ * 日期：2018年4月3日    
+ * Copyright 足下 Corporation 2018     
+ * 版权所有    
+ *    
+ */
+package MapFile;
+
+import java.net.URL;
+
+import org.geotools.data.simple.SimpleFeatureSource;
+import org.geotools.data.wms.WMS1_3_0;
+import org.geotools.map.FeatureLayer;
+import org.geotools.map.Layer;
+import org.geotools.styling.SLD;
+import org.geotools.styling.Style;
+import org.geotools.wms.v1_3.WMS;
+
+/**    
+ *     
+ * 项目名称：TwoMap    
+ * 类名称：MapServerRead    
+ * 类描述：    
+ * 创建人：jinyu    
+ * 创建时间：2018年4月3日 下午1:21:04    
+ * 修改人：jinyu    
+ * 修改时间：2018年4月3日 下午1:21:04    
+ * 修改备注：    
+ * @version     
+ *     
+ */
+public class MapServerRead {
+public void readMap()
+{
+    URL url=null;
+    WMS1_3_0.GetCapsRequest(url);
+   SimpleFeatureSource featureSource = store.getFeatureSource(); 
+   Style style = SLD.createSimpleStyle(featureSource.getSchema());
+   Layer layer = new FeatureLayer(featureSource, style);
+}
+}

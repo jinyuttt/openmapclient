@@ -1,0 +1,118 @@
+import java.io.File;
+import java.nio.charset.Charset;
+import java.util.List;
+
+import org.geotools.data.FeatureSource;
+import org.geotools.data.shapefile.ShapefileDataStore;
+import org.geotools.data.shapefile.dbf.DbaseFileHeader;
+import org.geotools.data.shapefile.dbf.DbaseFileReader;
+import org.geotools.data.shapefile.files.ShpFiles;
+import org.geotools.feature.FeatureCollection;
+import org.geotools.feature.FeatureIterator;
+import org.opengis.feature.simple.SimpleFeature;
+import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.feature.type.AttributeDescriptor;
+
+/**    
+ * 文件名：FileRead.java    
+ *    
+ * 版本信息：    
+ * 日期：2018年4月2日    
+ * Copyright 足下 Corporation 2018     
+ * 版权所有    
+ *    
+ */
+
+/**    
+ *     
+ * 项目名称：TwoMap    
+ * 类名称：FileRead    
+ * 类描述：    
+ * 创建人：jinyu    
+ * 创建时间：2018年4月2日 上午1:27:44    
+ * 修改人：jinyu    
+ * 修改时间：2018年4月2日 上午1:27:44    
+ * 修改备注：    
+ * @version     
+ *     
+ */
+public class FileRead {
+    public void readSHP(String path) {  
+        ShapefileDataStore shpDataStore = null;  
+        try {  
+            shpDataStore = new ShapefileDataStore(new File(path).toURI()  
+                    .toURL());  
+            shpDataStore.setCharset(Charset.forName("GBK"));  
+            // 文件名称  
+            String typeName = shpDataStore.getTypeNames()[0];  
+            FeatureSource<SimpleFeatureType, SimpleFeature> featureSource = null;  
+            featureSource = (FeatureSource<SimpleFeatureType, SimpleFeature>) shpDataStore  
+                    .getFeatureSource(typeName);  
+            FeatureCollection<SimpleFeatureType, SimpleFeature> result = featureSource  
+                    .getFeatures();  
+            SimpleFeatureType schema = result.getSchema(); // schema  
+            List<AttributeDescriptor> columns = schema  
+                    .getAttributeDescriptors();  
+            FeatureIterator<SimpleFeature> itertor = result.features();  
+            /* 
+             * 或者使用 FeatureReader FeatureReader reader = 
+             * DataUtilities.reader(result); while(reader.hasNext()){ 
+             * SimpleFeature feature = (SimpleFeature) reader.next(); } 
+             */  
+            while (itertor.hasNext()) {  
+                SimpleFeature feature = itertor.next();  
+                for (AttributeDescriptor attributeDes : columns) {  
+                    String attributeName = attributeDes.getName().toString();// attribute  
+                    if (attributeName.equals("the_geom"))  
+                        continue;  
+                    feature.getAttribute(attributeName); // attributeValue  
+                }  
+                Geometry g = (Geometry) feature.getDefaultGeometry();// Geometry  
+            }  
+            itertor.close();  
+        } catch (MalformedURLException e) {  
+            e.printStackTrace();  
+        } catch (IOException e) {  
+            e.printStackTrace();  
+        }  
+    }  
+    public void readDBF(String path) {  
+        DbaseFileReader reader = null;  
+        try {  
+            reader = new DbaseFileReader(new ShpFiles(path), false,  
+                    Charset.forName("GBK"));  
+            DbaseFileHeader header = reader.getHeader();  
+            int numFields = header.getNumFields();  
+            for (int i = 0; i < numFields; i++) {  
+                header.getFieldName(i);  
+                header.getFieldType(i);// 'C','N'  
+                header.getFieldLength(i);  
+            }  
+      
+            // 迭代读取记录  
+            while (reader.hasNext()) {  
+                try {  
+                    Object[] entry = reader.readEntry();  
+                    for (int i = 0; i < numFields; i++) {  
+                        String title = header.getFieldName(i);  
+                        Object value = entry[i];  
+                        String name = title.toString(); // column  
+                        String info = value.toString(); // value  
+                    }  
+                } catch (Exception e) {  
+                    e.printStackTrace();  
+                }  
+            }  
+        } catch (Exception ex) {  
+            ex.printStackTrace();  
+        } finally {  
+            if (reader != null) {  
+                // 关闭  
+                try {  
+                    reader.close();  
+                } catch (Exception e) {  
+                }  
+            }  
+        }  
+    }  
+}
